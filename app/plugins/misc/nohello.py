@@ -1,24 +1,40 @@
-from ub_core import bot, filters
-import time
+import asyncio
+from datetime import datetime, timedelta
+from pyrogram import Client, filters
 
-# Dictionary to store the last message timestamp for each user
-user_last_message_time = {}
+# Define a dictionary to store the last message timestamps
+last_message_time = {}
 
-@bot.on_message(filters.text)
-async def nohello_response(client, message):
-    user_id = message.from_user.id  # Get the user's ID
-    current_time = time.time()  # Get the current time in seconds
+# Define greetings to respond to
+greetings = {"hello", "hy"}
 
-    # Normalize the message text
-    text = message.text.strip().lower()
-    
-    # Check if the message is exactly "hello" or "hy"
-    if text in ["hello", "hy"]:
-        # Check if the user has sent a message in the last 5 minutes (300 seconds)
-        last_message_time = user_last_message_time.get(user_id, 0)
+async def check_and_respond(client, message):
+    user_id = message.from_user.id
+    text = message.text.lower().strip()
+
+    # If the message is in the greetings set and has no extra text
+    if text in greetings:
+        current_time = datetime.utcnow()
+        last_time = last_message_time.get(user_id, None)
         
-        if current_time - last_message_time >= 300:  # 5 minutes
-            await message.reply("/hy")
-    
-    # Update the last message time for the user
-    user_last_message_time[user_id] = current_time
+        # If it's the first message or last message was more than 5 minutes ago
+        if last_time is None or (current_time - last_time) >= timedelta(minutes=5):
+            # Schedule the response
+            await asyncio.sleep(5 * 60)  # Wait for 5 minutes
+            # Check again if no new message has been received
+            if last_message_time.get(user_id, None) == last_time:
+                await client.send_message(chat_id=message.chat.id, text="/hy")
+
+    # Update the last message time
+    last_message_time[user_id] = datetime.utcnow()
+
+# Create the Pyrogram Client
+app = Client("my_bot")
+
+# Define a message handler
+@app.on_message(filters.text & ~filters.private)
+async def message_handler(client, message):
+    await check_and_respond(client, message)
+
+# Run the bot
+app.run()
