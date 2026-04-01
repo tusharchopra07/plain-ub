@@ -32,7 +32,7 @@ async def list_files(
     """
     async for file in await client.file_search_stores.documents.list(parent=store.name, config=config):
         if file_filter is not None:
-            if await run_unknown_callable(file_filter, file):
+            if not await run_unknown_callable(file_filter, file):
                 continue
         yield file
 

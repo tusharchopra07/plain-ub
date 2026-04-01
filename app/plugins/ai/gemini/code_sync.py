@@ -88,9 +88,9 @@ async def sync_codebase(bot: BOT, message: Message):
             await reply.edit("`Aborted...`")
             return
 
-        # await message.reply("`Pruning old files from cloud...`")
+        await message.reply("`Pruning old files from cloud...`")
 
-        # await delete_files(store=CODEBASE_FILES_STORE, file_filter=partial(path_filter, path=path))
+        await delete_files(store=CODEBASE_FILES_STORE, file_filter=partial(path_filter, path=path))
 
         await message.reply("`Starting upload... this will take a while...`")
 
