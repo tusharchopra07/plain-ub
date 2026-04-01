@@ -1,12 +1,13 @@
 import asyncio
 import pathlib
+from functools import partial
 
 import pathspec
 from google.genai import types
 from ub_core import BOT, LOGGER, Config, Message, ub_core_dir, utils
 
 from app.plugins.ai.gemini import async_client, configs
-from app.plugins.ai.gemini.file_store import get_stores, upload_file_to_store
+from app.plugins.ai.gemini.file_store import delete_files, get_stores, upload_file_to_store
 
 APP = Config.WORKING_DIR
 CUR_DIR = pathlib.Path(".").resolve()
