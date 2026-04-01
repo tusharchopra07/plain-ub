@@ -2,7 +2,6 @@ import asyncio
 import os
 import random
 import shutil
-import time
 from io import BytesIO
 from pathlib import Path
 
@@ -62,7 +61,7 @@ async def video_kang(message: Message, ff=False) -> tuple[str, None]:
     if video.file_size > 5242880:
         raise MemoryError("File Size exceeds 5MB.")
 
-    download_path = Path("downloads") / str(time.time())
+    download_path = Config.TEMP_DOWNLOAD_PATH().as_posix() + "/"
     input_file = download_path / "input.mp4"
     output_file = download_path / "sticker.webm"
 
