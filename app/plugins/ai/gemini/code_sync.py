@@ -1,13 +1,12 @@
 import asyncio
 import pathlib
-from functools import partial
 
 import pathspec
 from google.genai import types
 from ub_core import BOT, LOGGER, Config, Message, ub_core_dir, utils
 
 from app.plugins.ai.gemini import async_client, configs
-from app.plugins.ai.gemini.file_store import delete_files, get_stores, upload_file_to_store
+from app.plugins.ai.gemini.file_store import get_stores, upload_file_to_store
 
 APP = Config.WORKING_DIR
 CUR_DIR = pathlib.Path(".").resolve()
@@ -52,6 +51,8 @@ async def sync_codebase(bot: BOT, message: Message):
         .csync app/plugins/files/download.py [syncs only this file]
         .csync scripts/ [syncs everything in ./scripts]
         .csync -c [syncs core]
+
+    NOTE: Recomended to sync core first then app
     """
     global CODEBASE_FILES_STORE
 
@@ -86,13 +87,14 @@ async def sync_codebase(bot: BOT, message: Message):
         if choice != "y":
             await reply.edit("`Aborted...`")
             return
-        await message.reply("`Pruning old files from cloud...`")
 
-        await delete_files(store=CODEBASE_FILES_STORE, file_filter=partial(path_filter, path=path))
+        # await message.reply("`Pruning old files from cloud...`")
 
-        await message.reply("`Starting upload...`")
+        # await delete_files(store=CODEBASE_FILES_STORE, file_filter=partial(path_filter, path=path))
 
-        for chunk in utils.helpers.create_chunks(total_files, chunk_size=15):
+        await message.reply("`Starting upload... this will take a while...`")
+
+        for chunk in utils.helpers.create_chunks(total_files, chunk_size=20):
             total += sum(1 for _ in await asyncio.gather(*[sync_file(f) for f in chunk]) if _ is not None)
     else:
         if await sync_file(path):
@@ -151,6 +153,7 @@ def get_files_to_sync(root: pathlib.Path, filter_paths: bool = True):
 
         total_files.extend([cwd / f for f in files if f.endswith(ALLOWED_EXT)])
 
+    total_files.sort()
     return total_files
 
 
