@@ -65,7 +65,7 @@ PRE CODE GENERATION STEPS:
         - study app/plugins roughly to understand how ub_ore is actually used in real world.
         - you will be generating code for a new plugin in app/plugins.
         - do not include app/plugins in final file name.
-        
+
     FUNCTIONS: get_site_package_tree and get_site_package_content
         - DO NOT call the functions for app and ub_core.
         - Call these ONLY when user requests you to study potential site-packages.
@@ -115,14 +115,11 @@ MULTI_SPEECH_CONFIG = types.SpeechConfig(
 class CodeResponseSchema(BaseModel):
     file_name: str = Field(description="full name with extension of the generated file ", default=None)
     file_content: str = Field(description="data to be written to file", default=None)
-
     response_text: str = Field(description="[OPTIONAL] any non code text to be sent back on user request", default=None)
     error_text: str = Field(description="'Error: reason' incase of failure complying user-request", default=None)
 
-    python_code_to_exec: str = Field(description="[Optional] python code to run live in current env.", default=None)
-    shell_code_to_exec: str = Field(
-        description="[Optional] shell code to run in ub_core.utils.run_shell_cmd", default=None
-    )
+    # python_code_to_exec: str = Field(description="[Optional] python code to run live in current env.", default=None)
+    # shell_code_to_exec: str = Field(description="[Optional] shell code to run in ub_core.utils.run_shell_cmd", default=None)
 
 
 class Tools:
