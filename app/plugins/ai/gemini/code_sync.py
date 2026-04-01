@@ -163,7 +163,7 @@ async def sync_file(file: pathlib.Path):
         if file.is_relative_to(parent):
             rel_path = file.relative_to(parent)
             sep = "." if file.name.endswith(".py") else "/"
-            file_name = sep.join([rel_path.parent.name, *rel_path.parts])
+            file_name = sep.join([parent.name, *rel_path.parts])
             break
     else:
         file_name = file.name
